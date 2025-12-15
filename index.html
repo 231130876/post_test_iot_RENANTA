@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Plant Green House</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              softpink: {
+                50: "#fff1f5",
+                100: "#ffe4ec",
+                200: "#fecddf",
+                300: "#f9a8c4",
+                400: "#f472b6",
+                500: "#ec4899",
+                600: "#db2777",
+                700: "#be185d",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body
+    class="bg-gradient-to-br from-softpink-50 via-white to-softpink-100 min-h-screen"
+  >
+    <!-- ================= LOGIN ================= -->
+    <div
+      id="loginForm"
+      class="min-h-screen flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-softpink-200"
+      >
+        <div class="text-center mb-8">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-softpink-400 to-softpink-600 rounded-full mb-4"
+          >
+            🌸
+          </div>
+          <h2 class="text-3xl font-bold text-gray-800">
+            Smart Plant Green House
+          </h2>
+          <p class="text-gray-500 mt-2">Login untuk monitoring tanaman</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Email</label
+            >
+            <input
+              type="email"
+              id="email"
+              placeholder="Masukkan email"
+              class="w-full px-4 py-3 border border-softpink-300 rounded-lg focus:ring-2 focus:ring-softpink-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Password</label
+            >
+            <input
+              type="password"
+              id="password"
+              placeholder="Masukkan password"
+              class="w-full px-4 py-3 border border-softpink-300 rounded-lg focus:ring-2 focus:ring-softpink-500 outline-none"
+            />
+          </div>
+
+          <button
+            id="loginBtn"
+            class="w-full bg-gradient-to-r from-softpink-500 to-softpink-600 text-white py-3 rounded-lg font-semibold hover:from-softpink-600 hover:to-softpink-700 transition-all shadow-lg"
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboard" class="hidden min-h-screen p-6">
+      <!-- Header -->
+      <div class="max-w-7xl mx-auto mb-8">
+        <div
+          class="bg-white rounded-2xl shadow-xl p-6 border border-softpink-200 flex justify-between items-center"
+        >
+          <h1 class="text-3xl font-bold text-gray-800">
+            🌷 Smart Plant Green House
+          </h1>
+          <button
+            id="logoutBtn"
+            class="px-6 py-2 bg-red-400 text-white rounded-lg hover:bg-red-500"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Sensor Cards -->
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Soil -->
+        <div
+          class="bg-white rounded-2xl shadow-xl p-6 border border-softpink-200"
+        >
+          <h3 class="text-xl font-semibold mb-4">🌱 Kelembaban Tanah</h3>
+          <div class="text-center">
+            <div
+              id="soilMoisture"
+              class="text-5xl font-bold text-softpink-600"
+            >
+              -- %
+            </div>
+            <p id="soilStatus" class="mt-2 font-medium">Memuat...</p>
+          </div>
+          <div class="mt-4 h-2 bg-gray-200 rounded-full">
+            <div
+              id="soilBar"
+              class="h-full bg-softpink-500 rounded-full"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Light -->
+        <div
+          class="bg-white rounded-2xl shadow-xl p-6 border border-softpink-200"
+        >
+          <h3 class="text-xl font-semibold mb-4">☀️ Tingkat Cahaya</h3>
+          <div class="text-center">
+            <div
+              id="lightLevel"
+              class="text-5xl font-bold text-orange-400"
+            >
+              -- %
+            </div>
+            <p id="lightStatus" class="mt-2 font-medium">Memuat...</p>
+          </div>
+          <div class="mt-4 h-2 bg-gray-200 rounded-full">
+            <div
+              id="lightBar"
+              class="h-full bg-orange-400 rounded-full"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Motion -->
+        <div
+          class="bg-white rounded-2xl shadow-xl p-6 border border-softpink-200"
+        >
+          <h3 class="text-xl font-semibold mb-4">👀 Gerakan (PIR)</h3>
+          <div class="text-center">
+            <div id="motion" class="text-3xl font-bold text-green-500">
+              --
+            </div>
+            <p id="motionStatus" class="mt-2 font-medium">Memuat...</p>
+          </div>
+          <div class="flex justify-center mt-6">
+            <div
+              id="motionIndicator"
+              class="w-16 h-16 rounded-full bg-gray-300"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FIREBASE ================= -->
+<script>
+  const loginForm = document.getElementById("loginForm");
+  const dashboard = document.getElementById("dashboard");
+
+  // ================= LOGIN (DUMMY) =================
+  document.getElementById("loginBtn").addEventListener("click", () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+
+    if (
+      email === "renantacantiks@gmail.com" &&
+      pass === "RenantaBatakJawa"
+    ) {
+      loginForm.style.display = "none";
+      dashboard.classList.remove("hidden");
+      startDummySensors();
+    } else {
+      alert("Email atau password salah 😿");
+    }
+  });
+
+  // ================= LOGOUT =================
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    dashboard.classList.add("hidden");
+    loginForm.style.display = "flex";
+  });
+
+  // ================= DUMMY SENSOR DATA =================
+  function startDummySensors() {
+    setInterval(() => {
+      const soil = randomBetween(20, 90);
+      const light = randomBetween(10, 100);
+      const motion = Math.random() > 0.7;
+
+      updateSoil(soil);
+      updateLight(light);
+      updateMotion(motion);
+    }, 2000); // update tiap 2 detik
+  }
+
+  function randomBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function updateSoil(v) {
+    soilMoisture.innerText = v + " %";
+    soilBar.style.width = v + "%";
+    soilStatus.innerText =
+      v < 30 ? "Kering" : v < 70 ? "Cukup" : "Basah";
+  }
+
+  function updateLight(v) {
+    lightLevel.innerText = v + " %";
+    lightBar.style.width = v + "%";
+    lightStatus.innerText =
+      v < 30 ? "Redup" : v < 70 ? "Terang" : "Sangat Terang";
+  }
+
+  function updateMotion(v) {
+    motion.innerText = v ? "Terdeteksi" : "Tidak Ada";
+    motionStatus.innerText = v ? "⚠️ Ada Gerakan" : "✅ Aman";
+    motionIndicator.className =
+      "w-16 h-16 rounded-full " +
+      (v ? "bg-red-400 animate-pulse" : "bg-green-400");
+  }
+</script>
+
+  </body>
+</html>
